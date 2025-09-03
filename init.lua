@@ -91,12 +91,38 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
+vim.g.have_nerd_font = true
 
--- [[ Setting options ]]
--- See `:help vim.o`
--- NOTE: You can change these options as you wish!
---  For more options, you can see `:help option-list`
+-- My custom scripts
+
+vim.keymap.set("n", "<leader>w", function()
+  vim.diagnostic.config({virtual_text=false})
+end, {desc = "Toggle off lsp warnings"})
+
+vim.keymap.set("n", "<leader>W", function()
+  vim.diagnostic.config({virtual_text=true})
+end, {desc = "Toggle off lsp warnings"})
+
+vim.opt.shiftwidth = 4    -- Number of spaces to use for each indent level (e.g., when pressing Tab)
+
+vim.api.nvim_create_autocmd({"BufWinEnter"}, {
+    group = vim.api.nvim_create_augroup('userconfig', { clear = true }),
+    desc = "return cursor to where it was last time closing the file",
+    pattern = "*",
+    command = "silent! normal! g`\"zv",
+})
+
+vim.keymap.set("n", "<leader><A-t>", function()
+  vim.cmd('tabnew')
+end, {desc = "Open new tab"})
+
+vim.keymap.set("n", "<leader>T", function()
+  vim.cmd.vnew()
+  vim.cmd.term()
+  vim.cmd.wincmd("J")
+  vim.api.nvim_win_set_height(0, 20)
+  vim.cmd('startinsert')
+end, {desc = "Open new terminal on bottom"})
 
 -- Make line numbers default
 vim.o.number = true
@@ -149,8 +175,8 @@ vim.o.splitbelow = true
 --  It is very similar to `vim.o` but offers an interface for conveniently interacting with tables.
 --   See `:help lua-options`
 --   and `:help lua-options-guide`
-vim.o.list = true
-vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
+--vim.o.list = true
+vim.opt.listchars = {trail = '·', nbsp = '␣' }
 
 -- Preview substitutions live, as you type!
 vim.o.inccommand = 'split'
@@ -165,9 +191,6 @@ vim.o.scrolloff = 10
 -- instead raise a dialog asking if you wish to save the current file(s)
 -- See `:help 'confirm'`
 vim.o.confirm = true
-
--- [[ Basic Keymaps ]]
---  See `:help vim.keymap.set()`
 
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
@@ -245,9 +268,23 @@ rtp:prepend(lazypath)
 --    :Lazy update
 --
 -- NOTE: Here is where you install your plugins.
+--
+
+-- My custom plugins
+
+
 require('lazy').setup({
-  -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
-  'NMAC427/guess-indent.nvim', -- Detect tabstop and shiftwidth automatically
+  --:NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
+  --'NMAC427/guess-indent.nvim', -- Detect tabstop and shiftwidth automatically
+
+  {
+  'nvim-lualine/lualine.nvim',
+    config = function ()
+      require('lualine').setup {
+    dependencies = { 'nvim-tree/nvim-web-devicons' }
+    }
+  end
+  },
 
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
@@ -518,6 +555,7 @@ require('lazy').setup({
       -- If you're wondering about lsp vs treesitter, you can check out the wonderfully
       -- and elegantly composed help section, `:help lsp-vs-treesitter`
 
+
       --  This function gets run when an LSP attaches to a particular buffer.
       --    That is to say, every time a new file is opened that is associated with
       --    an lsp (for example, opening `main.rs` is associated with `rust_analyzer`) this
@@ -671,7 +709,18 @@ require('lazy').setup({
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
-        -- clangd = {},
+        clangd = {
+          init_options = {
+            compilationDatabaseDirectory = "build";
+            index = {
+              threads = 0;
+            };
+            clang = {
+              excludeArgs = { "-frounding-math"} ;
+            };
+            filetypes =   { "h", "hpp", "c", "cpp", "objc", "objcpp", "cuda" };
+          },
+        },
         -- gopls = {},
         -- pyright = {},
         -- rust_analyzer = {},
@@ -881,11 +930,11 @@ require('lazy').setup({
     -- change the command in the config to whatever the name of that colorscheme is.
     --
     -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-    'folke/tokyonight.nvim',
+    'ellisonleao/gruvbox.nvim',
     priority = 1000, -- Make sure to load this before all the other start plugins.
     config = function()
       ---@diagnostic disable-next-line: missing-fields
-      require('tokyonight').setup {
+      require('gruvbox').setup {
         styles = {
           comments = { italic = false }, -- Disable italics in comments
         },
@@ -894,12 +943,13 @@ require('lazy').setup({
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'tokyonight-night'
+      vim.cmd.colorscheme 'gruvbox'
     end,
   },
 
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
+
 
   { -- Collection of various small independent plugins/modules
     'echasnovski/mini.nvim',
@@ -954,7 +1004,7 @@ require('lazy').setup({
         --  the list of additional_vim_regex_highlighting and disabled languages for indent.
         additional_vim_regex_highlighting = { 'ruby' },
       },
-      indent = { enable = true, disable = { 'ruby' } },
+      indent = { enable = false, disable = { 'ruby' } },
     },
     -- There are additional nvim-treesitter modules that you can use to interact
     -- with nvim-treesitter. You should go explore a few and see what interests you:
@@ -975,10 +1025,10 @@ require('lazy').setup({
   --
   -- require 'kickstart.plugins.debug',
   -- require 'kickstart.plugins.indent_line',
-  -- require 'kickstart.plugins.lint',
+     require 'kickstart.plugins.lint',
   -- require 'kickstart.plugins.autopairs',
-  -- require 'kickstart.plugins.neo-tree',
-  -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
+     require 'kickstart.plugins.neo-tree',
+     require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    This is the easiest way to modularize your config.
