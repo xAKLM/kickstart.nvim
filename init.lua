@@ -93,7 +93,10 @@ vim.g.maplocalleader = ' '
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = true
 
--- My custom scripts
+--:NOTE: My custom scripts
+vim.api.nvim_create_user_command('Reload', 'bufdo e', {})
+
+-- vim.opt.showtabline = 2
 
 vim.keymap.set("n", "<leader>w", function()
   vim.diagnostic.config({virtual_text=false})
@@ -128,7 +131,7 @@ end, {desc = "Open new terminal on bottom"})
 vim.o.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
--- vim.o.relativenumber = true
+vim.o.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.o.mouse = 'a'
@@ -273,18 +276,36 @@ rtp:prepend(lazypath)
 -- My custom plugins
 
 
+
 require('lazy').setup({
   --:NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   --'NMAC427/guess-indent.nvim', -- Detect tabstop and shiftwidth automatically
 
-  {
-  'nvim-lualine/lualine.nvim',
-    config = function ()
-      require('lualine').setup {
-    dependencies = { 'nvim-tree/nvim-web-devicons' }
-    }
-  end
-  },
+  -- {
+  -- 'nvim-lualine/lualine.nvim',
+  --   config = function ()
+  --     require('lualine').setup 
+  --     {
+  --       dependencies = { 'nvim-tree/nvim-web-devicons' },
+  --       tabline = 
+  --       {
+  --         lualine_a = {},
+  --         lualine_b = {},
+  --         lualine_c = { require'tabline'.tabline_buffers },
+  --         lualine_x = { require'tabline'.tabline_tabs },
+  --         lualine_y = {},
+  --         lualine_z = {},
+  --       },
+  --     }
+  -- end
+  -- },
+  -- {
+  --   'kdheepak/tabline.nvim',
+  --   config = function()
+  --     require'tabline'.setup {enable = false}
+  --   end,
+  --   requires = {'hoob3rt/lualine.nvim', 'kyazdani42/nvim-web-devicons'}
+  -- },
 
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
@@ -450,7 +471,17 @@ require('lazy').setup({
         --   },
         -- },
         -- pickers = {}
+        find_files = {
+          hidden = true,
+        },
         extensions = {
+          fzf = {
+            fuzzy = true,                    -- false will only do exact matching
+            override_generic_sorter = true,  -- override the generic sorter
+            override_file_sorter = true,     -- override the file sorter
+            case_mode = "smart_case",        -- or "ignore_case" or "respect_case"
+                                             -- the default case_mode is "smart_case"
+          },
           ['ui-select'] = {
             require('telescope.themes').get_dropdown(),
           },
