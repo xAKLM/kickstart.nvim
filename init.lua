@@ -114,7 +114,11 @@ vim.keymap.set("n", "<leader>W", function()
   vim.diagnostic.config({virtual_text=true})
 end, {desc = "Toggle off lsp warnings"})
 
-vim.opt.shiftwidth = 4    -- Number of spaces to use for each indent level (e.g., when pressing Tab)
+vim.opt.tabstop = 4
+vim.opt.shiftwidth = 4
+vim.opt.softtabstop = 4
+vim.opt.expandtab = true
+vim.opt.autoindent = true
 
 vim.api.nvim_create_autocmd({"BufWinEnter"}, {
     group = vim.api.nvim_create_augroup('userconfig', { clear = true }),
