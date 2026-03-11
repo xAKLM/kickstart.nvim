@@ -97,6 +97,14 @@ vim.g.have_nerd_font = true
 vim.api.nvim_create_user_command('Reload', 'bufdo e', {})
 
 -- vim.opt.showtabline = 2
+-- Remap 'd' and 'dd' to use the black hole register, preventing copy on deletion
+vim.keymap.set({"n", "v"}, "d", [["_d]], { noremap = true, desc = "Delete without copying (black hole register)" })
+vim.keymap.set("n", "dd", [["_dd]], { noremap = true, desc = "Delete line without copying (black hole register)" })
+
+-- Optional: Remap 'x' to also use the black hole register for single character deletion
+vim.keymap.set("n", "x", [["_x]], { noremap = true, desc = "Delete character without copying (black hole register)" })
+
+vim.keymap.set("x", "p", [["_dP]], { desc = "Paste without yanking selection" })
 
 vim.keymap.set("n", "<leader>w", function()
   vim.diagnostic.config({virtual_text=false})
